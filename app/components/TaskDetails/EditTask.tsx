@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { Task } from "../Task";
 import { useTaskStore } from "../store";
 
-const EditTask: React.FC<{ task: Task; > = ({
-  task,
-}) => {
+const EditTask: React.FC<{ task: Task }> = ({ task }) => {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const updated = useTaskStore((state) => state.updated);
