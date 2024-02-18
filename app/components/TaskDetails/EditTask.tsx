@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Task } from "../Task";
+import { useTaskStore } from "../store";
 
-const EditTask: React.FC<{ task: Task; updateTaskHandler: () => void }> = ({
+const EditTask: React.FC<{ task: Task; > = ({
   task,
-  updateTaskHandler,
 }) => {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
+  const updated = useTaskStore((state) => state.updated);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
@@ -40,7 +41,7 @@ const EditTask: React.FC<{ task: Task; updateTaskHandler: () => void }> = ({
       // Save the updated tasks array back to local storage
       localStorage.setItem("tasks", JSON.stringify(tasks));
       console.log("Task updated successfully.");
-      updateTaskHandler();
+      updated();
     } else {
       console.log("Task not found.");
     }

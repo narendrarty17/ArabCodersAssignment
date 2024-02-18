@@ -67,7 +67,6 @@ export default function TaskDetail() {
   const edit = useTaskStore((state) => state.edit);
   const setEdit = useTaskStore((state) => state.setEdit);
   const message = useTaskStore((state) => state.message);
-  const updated = useTaskStore((state) => state.updated);
   const deleted = useTaskStore((state) => state.deleted);
 
   const id = useLoaderData<typeof loader>();
@@ -75,10 +74,6 @@ export default function TaskDetail() {
   const title = task && task.title;
   const description = task && task.description;
   console.log(task);
-
-  const updateTaskHandler = () => {
-    updated();
-  };
 
   return (
     <div className="w-[100%] flex flex-col items-center">
@@ -120,9 +115,7 @@ export default function TaskDetail() {
             </button>
           </div>
         )}
-        {edit && task && (
-          <EditTask task={task} updateTaskHandler={updateTaskHandler} />
-        )}
+        {edit && task && <EditTask task={task} />}
         {edit && (
           <button
             className="px-4 py-2 w-48 bg-blue-500 text-white rounded-md"
