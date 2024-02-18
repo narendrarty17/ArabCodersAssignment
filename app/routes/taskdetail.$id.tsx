@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Task } from "~/components/Task";
 import Message from "~/components/utils/Message";
 import EditTask from "~/components/TaskDetails/EditTask";
+import { useTaskStore } from "~/components/store";
 
 function limitLetters(str: string, limit: number) {
   if (str.length <= limit) {
@@ -64,12 +64,12 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 
 export default function TaskDetail() {
-  const [edit, setEdit] = useState<boolean>(false);
-  const [message, setMessage] = useState<Message>({
-    set: false,
-    text: "",
-    type: "",
-  });
+  const edit = useTaskStore((state) => state.edit);
+  const setEdit = useTaskStore((state) => state.setEdit);
+  const message = useTaskStore((state) => state.message);
+  const updated = useTaskStore((state) => state.updated);
+  const deleted = useTaskStore((state) => state.deleted);
+
   const id = useLoaderData<typeof loader>();
   const task = id && findTaskById(id);
   const title = task && task.title;
@@ -77,11 +77,7 @@ export default function TaskDetail() {
   console.log(task);
 
   const updateTaskHandler = () => {
-    setMessage({
-      set: true,
-      text: "Task has been successfully updated",
-      type: "Success",
-    });
+    updated();
   };
 
   return (
@@ -108,7 +104,7 @@ export default function TaskDetail() {
             <button
               className="px-4 py-2 w-24 bg-blue-500 text-white rounded-md"
               onClick={() => {
-                setEdit(true);
+                setEdit();
               }}
             >
               Edit
@@ -117,11 +113,7 @@ export default function TaskDetail() {
               className="px-4 py-2 w-24 bg-blue-500 text-white rounded-md"
               onClick={() => {
                 deleteTaskById(id);
-                setMessage({
-                  set: true,
-                  text: "Task has been successfully deleted",
-                  type: "Success",
-                });
+                deleted();
               }}
             >
               Delete
@@ -135,7 +127,7 @@ export default function TaskDetail() {
           <button
             className="px-4 py-2 w-48 bg-blue-500 text-white rounded-md"
             onClick={() => {
-              setEdit(false);
+              setEdit();
             }}
           >
             Go Back to Task Detail

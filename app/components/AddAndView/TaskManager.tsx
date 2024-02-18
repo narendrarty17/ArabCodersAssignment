@@ -4,6 +4,7 @@ import AddTask from "./AddTask";
 import ViewTasks from "./ViewTasks";
 import { Task } from "../Task";
 import Message from "../utils/Message";
+import { useTaskStore } from "../store";
 
 interface Message {
   set: boolean;
@@ -11,22 +12,14 @@ interface Message {
   type: string;
 }
 
-interface Show {
-  set: boolean;
-  text: string;
-}
-
 const TaskManager: React.FC = () => {
+  const showAddBtn = useTaskStore((state) => state.showAddBtn);
+  const setAddBtn = useTaskStore((state) => state.setAddBtn);
+  const message = useTaskStore((state) => state.message);
+  const added = useTaskStore((state) => state.added);
+  const reset = useTaskStore((state) => state.reset);
+  const loaded = useTaskStore((state) => state.loaded);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [message, setMessage] = useState<Message>({
-    set: false,
-    text: "",
-    type: "",
-  });
-  const [showBtn, setShowBtn] = useState<Show>({
-    set: false,
-    text: "Show",
-  });
 
   // Load tasks from local storage on component mount
   useEffect(() => {
@@ -39,22 +32,10 @@ const TaskManager: React.FC = () => {
       });
 
       // Show success message when data is loaded
-      setMessage({
-        set: true,
-        text: "All tasks have been loaded",
-        type: "Success",
-      });
+      loaded();
 
       // Reset message after 5 seconds
-      setTimeout(
-        () =>
-          setMessage({
-            set: false,
-            text: "",
-            type: "",
-          }),
-        2000
-      );
+      setTimeout(() => reset(), 2000);
     }
   }, []);
 
@@ -66,33 +47,18 @@ const TaskManager: React.FC = () => {
   const handleTaskAddition = (newTask: Task) => {
     localStorage.clear();
     setTasks([...tasks, newTask]);
-    setMessage({
-      set: true,
-      text: "New task has been added",
-      type: "Success",
-    });
+    added();
     // Reset message after 5 seconds
-    setTimeout(
-      () =>
-        setMessage({
-          set: false,
-          text: "",
-          type: "",
-        }),
-      2000
-    );
+    setTimeout(() => reset(), 2000);
   };
 
   const viewTasksHandler = () => {
-    setShowBtn({
-      set: !showBtn.set,
-      text: showBtn.set ? "Hide" : "Show",
-    });
+    setAddBtn();
   };
 
   return (
     <div className="flex flex-col gap-5 items-center mt-10 md:mt-20 h-[100vh]">
-      {!showBtn.set && (
+      {!showAddBtn.set && (
         <div className="flex flex-col">
           <Message message={message} />
           <AddTask onTaskAdd={handleTaskAddition} />
@@ -104,7 +70,7 @@ const TaskManager: React.FC = () => {
       >
         View/Hide all Tasks
       </button>
-      {showBtn.set && <ViewTasks tasks={tasks} />}
+      {showAddBtn.set && <ViewTasks tasks={tasks} />}
     </div>
   );
 };
